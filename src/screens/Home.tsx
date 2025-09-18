@@ -1,17 +1,26 @@
 // src/screens/Home.tsx
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useAuth } from '../providers/AuthProvider';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+type RootStackParamList = {
+  Home: undefined;
+  SignIn: undefined;
+};
 
 export default function Home() {
-  const { user, signOut } = useAuth();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Bienvenido</Text>
-      <Text style={styles.email}>{user?.email}</Text>
+      <Text style={styles.email}>usuario@ejemplo.com</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => signOut('supabase')}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('SignIn')}
+      >
         <Text style={styles.buttonText}>Cerrar sesión</Text>
       </TouchableOpacity>
     </View>
