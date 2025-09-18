@@ -1,16 +1,14 @@
 // src/screens/Home.tsx
-import { useNavigation } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-type RootStackParamList = {
-  Home: undefined;
-  SignIn: undefined;
-};
 
 export default function Home() {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+    const router = useRouter();
+  
+
 
   return (
     <View style={styles.container}>
@@ -19,7 +17,7 @@ export default function Home() {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('SignIn')}
+        onPress={() =>  router.push('/sign-in')}
       >
         <Text style={styles.buttonText}>Cerrar sesión</Text>
       </TouchableOpacity>

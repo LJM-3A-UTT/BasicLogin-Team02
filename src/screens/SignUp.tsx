@@ -15,7 +15,7 @@ export default function SignUp() {
         <TextInput placeholder="Contraseña" style={styles.input} secureTextEntry />
         <TextInput placeholder="Confirmar contraseña" style={styles.input} secureTextEntry />
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/home')}>
           <Text style={styles.buttonText}>Crear cuenta</Text>
         </TouchableOpacity>
 

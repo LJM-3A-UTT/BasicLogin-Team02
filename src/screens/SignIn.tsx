@@ -14,7 +14,7 @@ export default function SignIn() {
         <TextInput placeholder="Correo" style={styles.input} keyboardType="email-address" autoCapitalize="none" />
         <TextInput placeholder="Contraseña" style={styles.input} secureTextEntry />
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/home')}>
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
 
