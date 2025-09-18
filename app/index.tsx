@@ -1,18 +1,8 @@
 // app/index.tsx
-import React from 'react';
 import { Redirect } from 'expo-router';
-import { useAuth } from '../src/providers/AuthProvider';
+import React from 'react';
 
 export default function Index() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return null;
-  }
-
-  if (user) {
-    return <Redirect href="./app/(app)/home" />;
-  } else {
-    return <Redirect href="/sign-in" />;
-  }
+  // Siempre redirige al login al abrir la app
+  return <Redirect href="/sign-in" />;
 }
