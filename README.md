@@ -1,50 +1,68 @@
-# Welcome to your Expo app 👋
+# Clinic App Frontend 📱
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicación móvil desarrollada con **React Native (Expo)** para la gestión de citas médicas.  
+Incluye autenticación segura con JWT y muestra imágenes curiosas de la **API de la NASA** 🚀.
 
-## Get started
+---
 
-1. Install dependencies
+## 🚀 Instalación y ejecución
 
-   ```bash
-   npm install
-   ```
+Requisitos: **Node 22.19.0** y **Expo CLI** instalado globalmente.
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+1. Clonar repositorio:
 ```bash
-npm run reset-project
-```
+git clone https://github.com/tu-usuario/clinic-app-frontend.git
+cd clinic-app-frontend
+Instalar dependencias:
+npm install
+Iniciar la app:
+npx expo start
+Podrás abrir la aplicación en:
+Expo Go (dispositivo móvil escaneando QR)
+Emulador Android
+Simulador iOS
+Web desde navegador
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+📦 Dependencias principales
+expo-router → navegación
+expo-secure-store → almacenamiento seguro de JWT en móvil
+localStorage → almacenamiento seguro de JWT en web
+formik → manejo de formularios
+yup → validación de formularios
+react-native-vector-icons → íconos
+@react-native-community/datetimepicker → selector de fechas
 
-To learn more about developing your project with Expo, look at the following resources:
+🔑 Flujo de autenticación
+El usuario se registra o inicia sesión.
+El backend responde con un token JWT.
+El token se guarda en:
+SecureStore si es móvil
+localStorage si es web
+Todas las peticiones protegidas incluyen este token en el header:
+Authorization: Bearer <token>
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+🗂️ Funcionalidades principales
+Registro e inicio de sesión de usuarios.
+Creación, listado, edición y eliminación de citas.
+Visualización de imágenes y curiosidades de la NASA en el listado de citas.
+Validación de formularios con mensajes de error claros.
+UI optimizada para usuarios con poca experiencia tecnológica.
 
-## Join the community
+⚙️ Integración con API de la NASA
+Cada cita muestra una curiosidad y una imagen obtenida desde la NASA:
+https://api.nasa.gov/planetary/apod?api_key=TU_API_KEY
+Ejemplo de consumo en frontend:
+const res = await fetch('https://api.nasa.gov/planetary/apod?api_key=TU_API_KEY');
+const data = await res.json();
+const citaConNasa = {
+  ...formData,
+  nasa: { url: data.url, title: data.title, curiosidad: data.explanation }
 
-Join our community of developers creating universal apps.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+🔒 Seguridad aplicada en frontend
+JWT para autenticar solicitudes.
+SecureStore y localStorage para guardar tokens de forma segura.
+Validación de formularios con Yup.
+Prevención de fuga de tokens nunca expuestos en código ni repositorios.
+Uso de variables de entorno para configurar API Keys.
