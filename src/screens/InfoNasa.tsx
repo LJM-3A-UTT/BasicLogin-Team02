@@ -14,7 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import nasaApi from "../api/nasaApi";
+import { getApod } from "../utils/getApod";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -32,10 +32,12 @@ const fetchNasaData = async (): Promise<void> => {
     setLoading(true);
     setError(null);
 
-    const res = await nasaApi.get("/apod", {
-      timeout: 8000,
-      signal: controller.signal,
-    });
+    // const res = await nasaApi.get("/apod", {
+    //   timeout: 8000,
+    //   signal: controller.signal,
+    // });
+
+    const res = await getApod()
 
     if (!res.data || res.data.media_type !== "image") {
       throw new Error("Respuesta inválida o no es una imagen");

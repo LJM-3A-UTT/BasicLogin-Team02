@@ -15,6 +15,9 @@ import {
 } from 'react-native';
 import * as Yup from 'yup';
 
+//importacion de la funcion de login
+import { singIn } from '../utils/auth';
+
 // ✅ Esquema Yup para validación de login
 const SignInSchema = Yup.object().shape({
   email: Yup.string()
@@ -53,15 +56,15 @@ export default function SignIn() {
 
   const handleLogin = async (values: { email: string; password: string }) => {
     try {
-      const res = await fetch('http://localhost:4000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      });
+      // const res = await fetch('http://localhost:4000/api/auth/login', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(values),
+      // });
 
-      const data = await res.json();
+      const data = await singIn(values.email,values.password);
 
-      if (res.ok) {
+      if (data.token) {
         if (Platform.OS === 'web') {
           localStorage.setItem('jwt', data.token);
         } else {
