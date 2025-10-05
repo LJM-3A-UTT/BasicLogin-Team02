@@ -124,8 +124,8 @@ export default function SignIn() {
               {touched.password && errors.password && (
                 <Text style={styles.error}>{errors.password}</Text>
               )}
-
-              <TouchableOpacity style={styles.button} onPress={handleSubmit as any}>
+              //handleSubmit as any
+              <TouchableOpacity style={styles.button} onPress={()=>router.push("/home")}>
                 <Text style={styles.buttonText}>Entrar</Text>
               </TouchableOpacity>
             </>

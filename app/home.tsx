@@ -1,8 +1,8 @@
 import React from 'react';
-import HomeScreen from '../src/screens/Home';
+import Dashboard from '../src/screens/Dashboard';
 
 export default function Home() {
   // Siempre redirige al login al abrir la app
 
-  return <HomeScreen />;
+  return <Dashboard />;
 }

@@ -1,18 +1,20 @@
 // src/screens/Home.tsx
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
 import {
   Dimensions,
-  Image,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
+
+//Importar api de la Nasa
+import nasaApi from "../api/nasaApi";
+
+import AppointmentModal from "@/src/components/AppointmentModal";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -22,9 +24,9 @@ function getCardWidth() {
   return "32%";
 }
 
-export default function Home() {
+export default function Appointment() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [citas, setCitas] = useState<any[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [detalleVisible, setDetalleVisible] = useState<number | null>(null);
@@ -42,23 +44,22 @@ export default function Home() {
   const [nasaModal, setNasaModal] = useState<any>(null);
 
   // Verificar JWT al cargar la pantalla
-  useEffect(() => {
-  const redirectIfNoToken = async () => {
-    let token: string | null = null;
-    if (Platform.OS === 'web') {
-      token = localStorage.getItem('jwt');
-    } else {
-      token = await SecureStore.getItemAsync('jwt');
-    }
+  //   useEffect(() => {
+  //   const redirectIfNoToken = async () => {
+  //     let token: string | null = null;
+  //     if (Platform.OS === 'web') {
+  //       token = localStorage.getItem('jwt');
+  //     } else {
+  //       token = await SecureStore.getItemAsync('jwt');
+  //     }
 
-    if (!token) {
-      setTimeout(() => router.replace('/sign-in'), 0); // Espera a que la pantalla se monte
-    }
-  };
+  //     if (token) {
+  //       setTimeout(() => router.replace('/sign-in'), 0); // Espera a que la pantalla se monte
+  //     }
+  //   };
 
-  redirectIfNoToken();
-}, []);
-
+  //   redirectIfNoToken();
+  // }, []);
 
   // Cargar citas desde AsyncStorage
   useEffect(() => {
@@ -89,16 +90,14 @@ export default function Home() {
     if (!formData.paciente || !formData.doctor) return;
 
     let nasa = null;
-    const urlsUsadas = citas.map(c => c.nasa?.url).filter(Boolean);
+    const urlsUsadas = citas.map((c) => c.nasa?.url).filter(Boolean);
 
     try {
       let data;
       let intentos = 0;
       do {
-        const res = await fetch(
-          "https://api.nasa.gov/planetary/apod?api_key=zpBtiG3MebkwF5QhEC3eA5VcOZgLyaXk8LUU8Uti"
-        );
-        data = await res.json();
+        const res = await nasaApi.get("/apod");
+        data = await res.data;
         intentos++;
         if (data.media_type !== "image") data.url = null;
         if (intentos > 10) break;
@@ -182,22 +181,16 @@ export default function Home() {
       setDate(selectedTime);
       setFormData({
         ...formData,
-        hora: selectedTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        hora: selectedTime.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       });
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      if (Platform.OS === "web") {
-        localStorage.removeItem("jwt");
-      } else {
-        await SecureStore.deleteItemAsync("jwt");
-      }
-      router.replace("/sign-in");
-    } catch (error) {
-      console.log("Error al cerrar sesión", error);
-    }
+  const handleDashboard = () => {
+    router.push("/home");
   };
 
   if (loading) {
@@ -220,10 +213,10 @@ export default function Home() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={handleLogout}
+          style={styles.dashboardButton}
+          onPress={handleDashboard}
         >
-          <Text style={styles.logoutText}>Cerrar sesión</Text>
+          <Text style={styles.dashboardText}>Volver al dashboard</Text>
         </TouchableOpacity>
       </View>
 
@@ -234,17 +227,12 @@ export default function Home() {
           {citas.map((cita) => (
             <View key={cita.id} style={styles.card}>
               <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                {cita.nasa?.url && (
-                  <Image
-                    source={{ uri: cita.nasa.url }}
-                    style={styles.cardImage}
-                    resizeMode="cover"
-                  />
-                )}
                 <View style={styles.cardInfo}>
                   <Text style={styles.cardTitle}>{cita.paciente}</Text>
                   <Text style={styles.cardText}>👨‍⚕️ {cita.doctor}</Text>
-                  <Text style={styles.cardText}>📆 {cita.fecha} ⏰ {cita.hora}</Text>
+                  <Text style={styles.cardText}>
+                    📆 {cita.fecha} ⏰ {cita.hora}
+                  </Text>
                   <Text style={styles.cardText}>📝 {cita.motivo}</Text>
                 </View>
               </View>
@@ -267,6 +255,24 @@ export default function Home() {
           ))}
         </View>
       </ScrollView>
+      {modalVisible && (
+        <AppointmentModal
+          visible={modalVisible}
+          formData={formData}
+          setFormData={setFormData}
+          onClose={cancelarModal}
+          onSave={
+            isEditing
+              ? () => {
+                  // editar lógica
+
+                  cancelarModal();
+                }
+              : crearCita
+          }
+          isEditing={isEditing}
+        />
+      )}
     </View>
   );
 }
@@ -373,15 +379,15 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
   },
-  logoutButton: {
-    backgroundColor: "#e53e3e",
+  dashboardText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  dashboardButton: {
+    backgroundColor: "#2ecc71",
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 8,
-  },
-  logoutText: {
-    color: "#fff",
-    fontWeight: "600",
   },
   nasaTitle: {
     fontWeight: "700",
