@@ -26,7 +26,7 @@ useEffect(() => {
       token = await SecureStore.getItemAsync('jwt');
     }
 
-    if (token) {
+    if (!token) {
       setTimeout(() => router.replace('/sign-in'), 0); // Espera a que la pantalla se monte
     }
   };
@@ -55,6 +55,10 @@ useEffect(() => {
 
   const handleAppointments = () => {
     router.push("/appointment");
+  };
+
+  const handleMedics = () => {
+    router.push("/medics");
   };
 
   return (
@@ -96,7 +100,7 @@ useEffect(() => {
 
           <TouchableOpacity 
             style={[styles.button, styles.doctorsButton]} 
-            onPress={handleAppointments}
+            onPress={handleMedics}
             activeOpacity={0.8}
           >
             <View style={styles.buttonContent}>
