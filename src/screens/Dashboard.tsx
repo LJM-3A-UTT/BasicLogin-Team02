@@ -50,15 +50,15 @@ useEffect(() => {
   const router = useRouter();
 
   const handleNasaInfo = () => {
-    router.push("/infonasa");
+    router.push("./infonasa");
   };
 
   const handleAppointments = () => {
-    router.push("/appointment");
+    router.push("./appointment");
   };
 
   const handleMedics = () => {
-    router.push("/medics");
+    router.push("./medics");
   };
 
   return (
