@@ -65,8 +65,8 @@ export default function SignIn() {
     }
 
     // Caso: correo no confirmado
-    if (data.msg && data.msg.includes('confirma tu correo')) {
-      return alert(data.msg);
+    if (data.msg && data.msg.includes('Email not confirmed')) {
+      return alert("Confirma tu correo antes de poder iniciar sesión");
     }
 
     // Caso: token disponible → login exitoso
@@ -82,7 +82,7 @@ export default function SignIn() {
       alert(data.msg || 'Error al iniciar sesión');
     }
   } catch (err) {
-    console.error('❌ Error de conexión o login:', err);
+    console.error('Eeeerror de conexión o login:', err);
     alert('Error de conexión');
   }
 };
