@@ -61,7 +61,6 @@ export default function SignUp() {
     confirmPassword?: string;
   }) => {
     try {
-      // Filtramos confirmPassword antes de enviar al backend
       const { email, password } = values;
 
       const res = await fetch('http://localhost:4000/api/auth/register', {
@@ -73,20 +72,32 @@ export default function SignUp() {
       const data = await res.json();
 
       if (res.ok) {
-        if (Platform.OS === 'web') {
-          localStorage.setItem('jwt', data.token);
+        // 🔹 Caso 1: usuario ya confirmado y JWT disponible
+        if (data.token) {
+          if (Platform.OS === 'web') {
+            localStorage.setItem('jwt', data.token);
+          } else {
+            await SecureStore.setItemAsync('jwt', data.token);
+          }
+          router.replace('/home');
         } else {
-          await SecureStore.setItemAsync('jwt', data.token);
+          // 🔹 Caso 2: usuario necesita confirmar correo
+          alert(
+            data.msg ||
+              'Se ha enviado un correo de confirmación. Revisa tu email antes de iniciar sesión.'
+          );
         }
-        router.replace('/home');
       } else {
-        alert(data.msg || 'Error al registrar');
+        // 🔹 Error de validación o correo duplicado
+        alert(data.msg || 'Inicie sesión correo ya  registrado');
       }
     } catch (err) {
       console.error('❌ Error de conexión o fetch:', err);
       alert('Error de conexión');
     }
   };
+
+
 
   return (
     <KeyboardAvoidingView
