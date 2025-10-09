@@ -26,7 +26,6 @@ const SignInSchema = Yup.object().shape({
     .required('El correo es obligatorio'),
   password: Yup.string()
     .trim()
-    .min(6, 'La contraseña debe tener al menos 6 caracteres')
     .required('La contraseña es obligatoria'),
 });
 
@@ -55,29 +54,39 @@ export default function SignIn() {
 
 
   const handleLogin = async (values: { email: string; password: string }) => {
-    try {
-      // const res = await fetch('http://localhost:4000/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(values),
-      // });
+  try {
+    const { email, password } = values;
 
-      const data = await singIn(values.email,values.password);
+    // Llamada al backend / login
+    const data = await singIn(email, password);
 
-      if (data.token) {
-        if (Platform.OS === 'web') {
-          localStorage.setItem('jwt', data.token);
-        } else {
-          await SecureStore.setItemAsync('jwt', data.token);
-        }
-        router.replace('/home');
-      } else {
-        alert(data.msg || 'Error al iniciar sesión');
-      }
-    } catch (err) {
-      alert('Error de conexión');
+    if (!data) {
+      return alert('Error inesperado al iniciar sesión');
     }
-  };
+
+    // Caso: correo no confirmado
+    if (data.msg && data.msg.includes('confirma tu correo')) {
+      return alert(data.msg);
+    }
+
+    // Caso: token disponible → login exitoso
+    if (data.token) {
+      if (Platform.OS === 'web') {
+        localStorage.setItem('jwt', data.token);
+      } else {
+        await SecureStore.setItemAsync('jwt', data.token);
+      }
+      router.replace('/home');
+    } else {
+      // Otro error genérico
+      alert(data.msg || 'Error al iniciar sesión');
+    }
+  } catch (err) {
+    console.error('❌ Error de conexión o login:', err);
+    alert('Error de conexión');
+  }
+};
+
 
   return (
     <KeyboardAvoidingView
