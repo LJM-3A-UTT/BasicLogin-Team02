@@ -6,7 +6,9 @@ import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
+  Modal,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -35,9 +37,10 @@ export default function SignUp() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false); // Estado para controlar el modal
 
   // Si ya hay JWT → redirigir a Home
-   useEffect(() => {
+  useEffect(() => {
     const redirectIfLoggedIn = async () => {
       let token: string | null = null;
       if (Platform.OS === 'web') {
@@ -53,7 +56,6 @@ export default function SignUp() {
 
     redirectIfLoggedIn();
   }, []);
-
 
   const handleRegister = async (values: {
     email: string;
@@ -89,15 +91,13 @@ export default function SignUp() {
         }
       } else {
         // 🔹 Error de validación o correo duplicado
-        alert(data.msg || 'Inicie sesión correo ya  registrado');
+        alert(data.msg || 'Inicie sesión correo ya registrado');
       }
     } catch (err) {
       console.error('❌ Error de conexión o fetch:', err);
       alert('Error de conexión');
     }
   };
-
-
 
   return (
     <KeyboardAvoidingView
@@ -178,7 +178,53 @@ export default function SignUp() {
         <TouchableOpacity onPress={() => router.push('/sign-in')}>
           <Text style={styles.link}>¿Ya tienes cuenta? Inicia sesión</Text>
         </TouchableOpacity>
+
+        {/* Enlace al Aviso de Privacidad que abre el modal */}
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Text style={styles.link}>Aviso de privacidad</Text>
+        </TouchableOpacity>
       </View>
+
+      {/* Modal del Aviso de Privacidad */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Aviso de Privacidad</Text>
+            <ScrollView style={styles.scrollContent}>
+              <Text style={styles.text}>
+                En ClinicApp, nos comprometemos a proteger tu privacidad. Este aviso de privacidad describe
+                cómo recopilamos, utilizamos y protegemos tu información personal. Al utilizar nuestra aplicación, aceptas las
+                prácticas descritas en este aviso.
+              </Text>
+              <Text style={styles.text}>
+                1. Información que Recopilamos: Recopilamos información personal como tu correo electrónico y datos de uso de la
+                aplicación.
+              </Text>
+              <Text style={styles.text}>
+                2. Uso de la Información: Usamos la información para proporcionarte nuestros servicios y mantener tu cuenta.
+              </Text>
+              <Text style={styles.text}>
+                3. Protección de la Información: Implementamos medidas de seguridad para proteger tus datos.
+              </Text>
+              <Text style={styles.text}>
+                4. Compartir Información: No compartimos tu información sin tu consentimiento, excepto cuando sea necesario por
+                razones legales.
+              </Text>
+              <Text style={styles.text}>
+                5. Cambios al Aviso: Nos reservamos el derecho de modificar este aviso. Cualquier cambio será publicado aquí.
+              </Text>
+            </ScrollView>
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+              <Text style={styles.buttonText}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -259,4 +305,43 @@ const styles = StyleSheet.create({
     color: '#1DA1F2',
     fontWeight: '600',
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    width: '90%',
+    maxWidth: 350,
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 12,
+    alignItems: 'center',
+    maxHeight: '80%', // Máxima altura
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#333',
+  },
+  text: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 20,
+    textAlign: 'left',
+  },
+  scrollContent: {
+    maxHeight: '70%',
+    marginBottom: 20,
+  },
+  closeButton: {
+    backgroundColor: '#1DA1F2',
+    padding: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 10,
+  },
 });
+

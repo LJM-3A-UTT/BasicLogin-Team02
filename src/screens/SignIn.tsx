@@ -76,6 +76,7 @@ export default function SignIn() {
       } else {
         await SecureStore.setItemAsync('jwt', data.token);
       }
+      console.log('Token guardado:', data.token);
       router.replace('/home');
     } else {
       // Otro error genérico
